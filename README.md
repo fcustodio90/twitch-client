@@ -58,6 +58,34 @@ const StreamList = () => {
 };
 ```
 
+### Header
+
+The header component will be fixed on top of every single page application. 
+
+TODO: Later down the road Header component will need to have rendering logic in order to change according to user login status.
+
+```js
+const Header = () => {
+  return (
+    <div className="ui secondary pointing menu">
+      <Link to="/" className="item">
+        Streamy
+      </Link>
+      <div className="right menu">
+        <Link to="/" className="item">
+          All Streams
+        </Link>
+        <GoogleAuth />
+      </div>
+    </div>
+  );
+};
+```
+
+### GoogleAuth
+
+TODO::
+
 ## Actions
 
 ### Sign in
@@ -88,7 +116,7 @@ export const signOut = () => {
 
 
 
-# CREATE-REACT-APP Documentation
+## CREATE-REACT-APP Documentation
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 

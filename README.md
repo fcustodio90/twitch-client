@@ -1,3 +1,95 @@
+# Twitch Client
+
+This is a Single page application featuring React and Redux.
+
+## Installation
+
+0. Clone the repository
+1. Run `npm install`
+2. Run `npm start`
+
+## Components structure
+
+### StreamCreate
+
+TODO: Make the StreamCreate be able to handle Create actions (CRUD)
+
+```js
+const StreamCreate = () => {
+  return <div>StreamCreate</div>;
+};
+```
+### StreamDelete
+
+TODO: Make the StreamDelete be able to handle delete actions (CRUD)
+
+```js
+const StreamDelete = () => {
+  return <div>StreamDelete</div>;
+};
+```
+
+### StreamEdit
+
+TODO: Make the StreamDelete be able to handle edit actions (CRUD)
+
+```js
+const StreamEdit = () => {
+  return <div>StreamEdit</div>;
+};
+```
+
+### StreamList
+
+TODO: Make the StreamList be able to handle edit actions (CRUD)
+
+```js
+const StreamList = () => {
+  return <div>StreamList</div>;
+};
+```
+### StreamShow
+
+TODO: Make the StreamList be able to handle edit actions (CRUD)
+
+```js
+const StreamList = () => {
+  return <div>StreamList</div>;
+};
+```
+
+## Actions
+
+### Sign in
+
+Handles gapi authentication status. Responsible for changing the status of the auth inside redux store from true to false or vice versa. Default value starts as null. Also contains userId which will come from google gapi and will be needed later in the application to share userId state across several components in order to identify which user is which and to perform crud operations accordindly
+
+```js
+export const signIn = (userId) => {
+  return {
+    type: SIGN_IN,
+    payload: userId  
+  };
+};
+```
+### Sign out
+
+Same logic as signIn really.
+
+```js
+export const signOut = () => {
+  return {
+    type: SIGN_OUT  
+  };
+};
+```
+
+
+
+
+
+# CREATE-REACT-APP Documentation
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

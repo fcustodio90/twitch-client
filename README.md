@@ -8,6 +8,12 @@ This is a Single page application featuring React and Redux.
 1. Run `npm install`
 2. Run `npm start`
 
+## Backend API
+
+This is a client side project only. However it uses RESTful conventions to comunicate with a server side api.
+
+Go to https://github.com/fcustodio90/twitch-api read the instructions and run the api locally. By default client runs on localhost:3000 while the api runs on localhost:3001.
+
 ## Components structure
 
 ### StreamCreate

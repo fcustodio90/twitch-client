@@ -21,8 +21,81 @@ Go to https://github.com/fcustodio90/twitch-api read the instructions and run th
 TODO: Make the StreamCreate be able to handle Create actions (CRUD)
 
 ```js
-const StreamCreate = () => {
-  return <div>StreamCreate</div>;
+class StreamCreate extends React.Component {
+  
+  // Receives meta object -> de-structure into error and touched arguments.
+  // Renders errors if form object has an error and is touched (meaning user clicks outside the input fields while making an error)
+  renderError({ error, touched }) { // 
+    if (touched && error) {
+      return (
+        <div className="ui error message">
+          <div className="error">{error}</div>
+        </div>
+      );
+    }
+  }
+  
+  renderInput = ({ input, label, meta }) => {
+    const className = `field ${meta.error && meta.touched ? "error" : ""}`;
+    return (
+      <div className={className}>
+        <label>{label}</label>
+        <input {...input} autoComplete="off" />
+        {this.renderError(meta)}
+      </div>
+    );
+  };
+
+  onSubmit = formValues => {
+    this.props.createStream(formValues);
+  };
+
+  render() {
+    return (
+      <form
+        onSubmit={this.props.handleSubmit(this.onSubmit)}
+        className="ui form error"
+      >
+        <Field name="title" component={this.renderInput} label="Enter Title" />
+        <Field
+          name="description"
+          component={this.renderInput}
+          label="Enter Description"
+        />
+        <button className="ui button primary">Submit</button>
+      </form>
+    );
+  }
+}
+
+// Handles form validations errors
+// Displays error messages if user did not enter a title or description
+// Note: errors.title and errors.description only work because by convention that's how we named the field names
+const validate = formValues => {
+  const errors = {};
+
+  if (!formValues.title) {
+    errors.title = "You must enter a title";
+  }
+
+  if (!formValues.description) {
+    errors.description = "You must enter a description";
+  }
+
+  return errors;
+};
+
+// Wrapping ReduxForm in a const to make code easier to read
+const formWrapped = reduxForm({
+  form: "streamCreate",
+  validate
+})(StreamCreate);
+
+// Using the connect and passing the action creator and the ReduxForm wrapped
+export default connect(
+  null,
+  { createStream }
+)(formWrapped);
 };
 ```
 ### StreamDelete

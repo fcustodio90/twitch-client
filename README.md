@@ -8,15 +8,96 @@ This is a Single page application featuring React and Redux.
 1. Run `npm install`
 2. Run `npm start`
 
+## Backend API
+
+This is a client side project only. However it uses RESTful conventions to comunicate with a server side api.
+
+Go to https://github.com/fcustodio90/twitch-api read the instructions and run the api locally. By default client runs on localhost:3000 while the api runs on localhost:3001.
+
 ## Components structure
 
 ### StreamCreate
 
-TODO: Make the StreamCreate be able to handle Create actions (CRUD)
+Handles the ability to create streams 
 
 ```js
-const StreamCreate = () => {
-  return <div>StreamCreate</div>;
+class StreamCreate extends React.Component {
+  
+  // Receives meta object -> de-structure into error and touched arguments.
+  // Renders errors if form object has an error and is touched 
+  // (meaning user clicks outside the input fields while making an error)
+  renderError({ error, touched }) { // 
+    if (touched && error) {
+      return (
+        <div className="ui error message">
+          <div className="error">{error}</div>
+        </div>
+      );
+    }
+  }
+  
+  renderInput = ({ input, label, meta }) => {
+    const className = `field ${meta.error && meta.touched ? "error" : ""}`;
+    return (
+      <div className={className}>
+        <label>{label}</label>
+        <input {...input} autoComplete="off" />
+        {this.renderError(meta)}
+      </div>
+    );
+  };
+
+  onSubmit = formValues => {
+    this.props.createStream(formValues);
+  };
+
+  render() {
+    return (
+      <form
+        onSubmit={this.props.handleSubmit(this.onSubmit)}
+        className="ui form error"
+      >
+        <Field name="title" component={this.renderInput} label="Enter Title" />
+        <Field
+          name="description"
+          component={this.renderInput}
+          label="Enter Description"
+        />
+        <button className="ui button primary">Submit</button>
+      </form>
+    );
+  }
+}
+
+// Handles form validations errors
+// Displays error messages if user did not enter a title or description
+// Note: errors.title and errors.description only work because by 
+// convention that's how we named the field names
+const validate = formValues => {
+  const errors = {};
+
+  if (!formValues.title) {
+    errors.title = "You must enter a title";
+  }
+
+  if (!formValues.description) {
+    errors.description = "You must enter a description";
+  }
+
+  return errors;
+};
+
+// Wrapping ReduxForm in a const to make code easier to read
+const formWrapped = reduxForm({
+  form: "streamCreate",
+  validate
+})(StreamCreate);
+
+// Using the connect and passing the action creator and the ReduxForm wrapped
+export default connect(
+  null,
+  { createStream }
+)(formWrapped);
 };
 ```
 ### StreamDelete
@@ -84,7 +165,85 @@ const Header = () => {
 
 ### GoogleAuth
 
-TODO::
+Handles authentication using google auth2. Auth is saved in redux store to be sure to handle authorization in components later on (TODO)
+
+```js
+class GoogleAuth extends React.Component {
+  // Handles authentication as soon as component is mounted
+  componentDidMount() {
+    // makes the request to google auth 2 api
+    window.gapi.load('client:auth2', () => {
+      window.gapi.client.init({
+        // query params
+        clientId: '461330436468-vg2mfk7al6e5pv6edmuqdvuipmjihsse.apps.googleusercontent.com',
+        // custom scopes. For this project only email is needed
+        scope: 'email'
+      }).then(() => {
+        this.auth = window.gapi.auth2.getAuthInstance();
+        // checks if the user is Signed In or Not.
+        // This is a built in function inside auth object. Returns a boolean
+        this.onAuthChange(this.auth.isSignedIn.get());
+        // Auth object has a listen function to detect if user changes his logged in state
+        // As an argument we pass this.onAuthChange which is a custom function to handle auth state
+        // inside or redux store. So if the user logs in or logs out the state gets saved into our redux store
+        this.auth.isSignedIn.listen(this.onAuthChange);
+      });
+    });
+  }
+
+  onAuthChange = (isSignedIn) => {
+    if (isSignedIn) {
+      this.props.signIn(this.auth.currentUser.get().getId());
+    } else {
+      this.props.signOut();
+    }
+  };
+
+  onSignInClick = () => {
+    // calls signIn action creator
+    this.auth.signIn();
+  };
+
+  onSignOutClick = () => {
+    // cals signOut action creator
+    this.auth.signOut();
+  }
+
+  renderAuthButton() {
+    // logic to render different buttons no big deal really.
+    if (this.props.isSignedIn === null) {
+      return null;
+    } else if (this.props.isSignedIn) {
+      return (
+        <button onClick={this.onSignOutClick} className="ui google plus button">
+          <i className="google plus icon"></i>
+          Sign out with google
+        </button>
+      );
+    } else {
+      return (
+        <button onClick={this.onSignInClick} className="ui google plus button right-floated">
+          <i className="google plus icon"></i>
+          Sign in with google
+        </button>  
+      );
+    }
+  }
+
+  render() {
+    return <div>{this.renderAuthButton()}</div>;
+  } 
+}
+
+const mapStateToProps = (state) => {
+  return { isSignedIn: state.auth.isSignedIn }
+}
+
+export default connect(
+  mapStateToProps,
+  {signIn, signOut}
+)(GoogleAuth);
+```
 
 ## Actions
 
